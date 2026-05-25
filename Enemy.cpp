@@ -36,7 +36,7 @@ void Enemy::Update()
 	prog_timer = prog_timer - dt;
 	if (dir_timer < 0.0f)
 	{
-		dir_ = (DIR)(GetRand(3));
+		//dir_ = (DIR)(GetRand(3));
 		dir_timer = 3.0f + dir_timer;
 	}
 
@@ -66,7 +66,11 @@ void Enemy::Update()
 		if (mapValue != 1)
 		{
 			pos_ = newPos;
+		}else if(mapValue == 1)
+		{
+			dir_ = (DIR)(GetRand(3));
 		}
+		
 		prog_timer = 0.5f + prog_timer;
 	}
 
@@ -93,4 +97,9 @@ void Enemy::Draw()
 		animTimer = ANIM_INTERVAL + animTimer;
 	}
 	animTimer = animTimer - Time::DeltaTime();
+}
+
+void Enemy::Chase()
+{
+
 }

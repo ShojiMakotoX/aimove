@@ -29,31 +29,32 @@ Player::~Player()
 void Player::Update()
 {
 	Point newPos = pos_;
-	static float prog_timer = 0.5f;
+	//static float prog_timer = 0.5f;
 	if (Input::IsKeyDown(KEY_INPUT_UP))
 	{
 		dir_ = UP;
-		pos_.y -= PLAYER_DRAW_SIZE;
+		newPos.y -= PLAYER_DRAW_SIZE;
 	}
 	else if (Input::IsKeyDown(KEY_INPUT_DOWN))
 	{
 		dir_ = DOWN;
-		pos_.y += PLAYER_DRAW_SIZE;
+		newPos.y += PLAYER_DRAW_SIZE;
 	}
 	else if (Input::IsKeyDown(KEY_INPUT_LEFT))
 	{
 		dir_ = LEFT;
-		pos_.x -= PLAYER_DRAW_SIZE;
+		newPos.x -= PLAYER_DRAW_SIZE;
 	}
 	else if (Input::IsKeyDown(KEY_INPUT_RIGHT))
 	{
 		dir_ = RIGHT;
-		pos_.x += PLAYER_DRAW_SIZE;
+		newPos.x += PLAYER_DRAW_SIZE;
 	}
-	int mapValue = FindGameObject<Stage>()->GetMap(pos_.x / CHA_SIZE, pos_.y / CHA_SIZE);
+
+	int mapValue = FindGameObject<Stage>()->GetMap(newPos.x / CHA_SIZE, newPos.y / CHA_SIZE);
 	if (mapValue != 1)
 	{
-		Player::pos_ = newPos;
+		pos_ = newPos;
 	}
 }
 

@@ -14,5 +14,6 @@ public:
 	~Enemy();
 	void Update() override;
 	void Draw() override;
+	void Chase();//ƒvƒŒƒCƒ„[‚ğ’ÇÕ‚·‚é
 };
 
