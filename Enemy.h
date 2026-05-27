@@ -15,5 +15,8 @@ public:
 	void Update() override;
 	void Draw() override;
 	void Chase();//ƒvƒŒƒCƒ„[‚ğ’ÇÕ‚·‚é
+private:
+	DIR turnright_;
+
 };
 

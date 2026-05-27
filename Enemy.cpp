@@ -68,7 +68,8 @@ void Enemy::Update()
 			pos_ = newPos;
 		}else if(mapValue == 1)
 		{
-			dir_ = (DIR)(GetRand(3));
+			dir_ = DIR(GetRand(3));
+
 		}
 		
 		prog_timer = 0.5f + prog_timer;
