@@ -3,6 +3,7 @@
 #include "global.h"
 
 
+
 class Enemy :
     public GameObject
 {
@@ -16,7 +17,11 @@ public:
 	void Draw() override;
 	void Chase();//ƒvƒŒƒCƒ„[‚ğ’ÇÕ‚·‚é
 private:
-	DIR turnright_;
+	DIR TurnRight(DIR d);
+	DIR TurnLeft(DIR d);
+	DIR TurnBack(DIR d);
+	bool CanMove(DIR dir);
+
 
 };
 

@@ -37,17 +37,17 @@ void Player::Update()
 	}
 	else if (Input::IsKeyDown(KEY_INPUT_DOWN))
 	{
-		dir_ = DOWN;
+		dir_ = RIGHT;
 		newPos.y += PLAYER_DRAW_SIZE;
 	}
 	else if (Input::IsKeyDown(KEY_INPUT_LEFT))
 	{
-		dir_ = LEFT;
+		dir_ = DOWN;
 		newPos.x -= PLAYER_DRAW_SIZE;
 	}
 	else if (Input::IsKeyDown(KEY_INPUT_RIGHT))
 	{
-		dir_ = RIGHT;
+		dir_ = LEFT;
 		newPos.x += PLAYER_DRAW_SIZE;
 	}
 

@@ -40,9 +40,29 @@ void Enemy::Update()
 		dir_timer = 3.0f + dir_timer;
 	}
 
-	Point newPos = pos_;
 	if (prog_timer < 0.0f)
 	{
+
+		DIR right = TurnRight(dir_);
+		
+		if (CanMove(right))
+		{
+			dir_ = right;
+		}
+		else if (CanMove(dir_))
+		{
+
+		}
+		else if (CanMove(TurnLeft(dir_)))
+		{
+			dir_ = TurnLeft(dir_);
+		}
+		else
+			dir_ = TurnBack(dir_);
+		
+		//ここで1マス移動する
+		Point newPos = pos_;
+
 		switch (dir_)
 		{
 		case UP:
@@ -60,18 +80,7 @@ void Enemy::Update()
 		default:
 			break;
 		}
-
-		int mapValue = FindGameObject<Stage>()->GetMap(newPos.x / CHA_SIZE, newPos.y / CHA_SIZE);
-		//移動先がステージの外に出ないようにする
-		if (mapValue != 1)
-		{
-			pos_ = newPos;
-		}else if(mapValue == 1)
-		{
-			dir_ = DIR(GetRand(3));
-
-		}
-		
+		pos_ = newPos;
 		prog_timer = 0.5f + prog_timer;
 	}
 
@@ -85,9 +94,9 @@ void Enemy::Draw()
 
 	Rect iRect[4] = {
 		{  nowFrame * ENEMY_SIZE, 3 * ENEMY_SIZE, ENEMY_SIZE, ENEMY_SIZE},
+		{  nowFrame * ENEMY_SIZE, 2 * ENEMY_SIZE, ENEMY_SIZE, ENEMY_SIZE},
 		{  nowFrame * ENEMY_SIZE, 0 * ENEMY_SIZE, ENEMY_SIZE, ENEMY_SIZE},
-		{  nowFrame * ENEMY_SIZE, 1 * ENEMY_SIZE, ENEMY_SIZE, ENEMY_SIZE},
-		{  nowFrame * ENEMY_SIZE, 2 * ENEMY_SIZE, ENEMY_SIZE, ENEMY_SIZE}
+		{  nowFrame * ENEMY_SIZE, 1 * ENEMY_SIZE, ENEMY_SIZE, ENEMY_SIZE}
 	};
 	DrawBox(pos_.x, pos_.y, pos_.x + ENEMY_DRAW_SIZE, pos_.y + ENEMY_DRAW_SIZE,
 		GetColor(255, 255, 0), FALSE,2);
@@ -103,4 +112,43 @@ void Enemy::Draw()
 void Enemy::Chase()
 {
 
+}
+
+DIR Enemy::TurnRight(DIR d)
+{
+	return (DIR)((d + 1 )% 4);
+}
+
+DIR Enemy::TurnLeft(DIR d)
+{
+	return DIR((d + 3) % 4);
+}
+
+DIR Enemy::TurnBack(DIR d)
+{
+	return DIR((d + 2) % 4);
+}
+
+bool Enemy::CanMove(DIR dir)
+{
+	Point newPos = pos_;
+	switch (dir)
+	{
+	case UP:
+		newPos.y -= ENEMY_DRAW_SIZE;
+		break;
+	case DOWN:
+		newPos.y += ENEMY_DRAW_SIZE;
+		break;
+	case LEFT:
+		newPos.x -= ENEMY_DRAW_SIZE;
+		break;
+	case RIGHT:
+		newPos.x += ENEMY_DRAW_SIZE;
+		break;
+	default:
+		break;
+	}
+	int mapValue = FindGameObject<Stage>()->GetMap(newPos.x / CHA_SIZE, newPos.y / CHA_SIZE);
+	return (mapValue != 1);
 }
