@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include "time.h"
 #include "Stage.h"
+#include "Player.h"
 
 namespace
 {
@@ -44,21 +45,23 @@ void Enemy::Update()
 	{
 
 		DIR right = TurnRight(dir_);
-		
-		if (CanMove(right))
+
+		if (CanMove(right)&&!CanMove(dir_))
 		{
 			dir_ = right;
 		}
-		else if (CanMove(dir_))
+		else if (CanMove(right))
 		{
-
+			
 		}
 		else if (CanMove(TurnLeft(dir_)))
 		{
 			dir_ = TurnLeft(dir_);
 		}
 		else
+		{
 			dir_ = TurnBack(dir_);
+		}
 		
 		//‚±‚±‚Å1ƒ}ƒXˆÚ“®‚·‚é
 		Point newPos = pos_;
@@ -81,7 +84,7 @@ void Enemy::Update()
 			break;
 		}
 		pos_ = newPos;
-		prog_timer = 0.5f + prog_timer;
+		prog_timer = 0.3f + prog_timer;
 	}
 
 }
@@ -111,6 +114,12 @@ void Enemy::Draw()
 
 void Enemy::Chase()
 {
+	Player* player = FindGameObject<Player>();
+	player->GetPlayerPos();
+	
+
+
+
 
 }
 
@@ -149,6 +158,6 @@ bool Enemy::CanMove(DIR dir)
 	default:
 		break;
 	}
-	int mapValue = FindGameObject<Stage>()->GetMap(newPos.x / CHA_SIZE, newPos.y / CHA_SIZE);
+	int mapValue = FindGameObject<Stage>()->GetMap(newPos.x / ENEMY_DRAW_SIZE, newPos.y / ENEMY_DRAW_SIZE);
 	return (mapValue != 1);
 }
