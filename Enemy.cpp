@@ -44,24 +44,7 @@ void Enemy::Update()
 	if (prog_timer < 0.0f)
 	{
 
-		DIR right = TurnRight(dir_);
-
-		if (CanMove(right)&&!CanMove(dir_))
-		{
-			dir_ = right;
-		}
-		else if (CanMove(right))
-		{
-			
-		}
-		else if (CanMove(TurnLeft(dir_)))
-		{
-			dir_ = TurnLeft(dir_);
-		}
-		else
-		{
-			dir_ = TurnBack(dir_);
-		}
+		Chase();
 		
 		//ここで1マス移動する
 		Point newPos = pos_;
@@ -110,15 +93,100 @@ void Enemy::Draw()
 		animTimer = ANIM_INTERVAL + animTimer;
 	}
 	animTimer = animTimer - Time::DeltaTime();
+
+	int centerX = pos_.x + ENEMY_DRAW_SIZE / 2;
+	int centerY = pos_.y + ENEMY_DRAW_SIZE / 2;
+	DrawCircle(centerX, centerY, 200, GetColor(255, 255, 0), FALSE);
 }
 
 void Enemy::Chase()
 {
 	Player* player = FindGameObject<Player>();
-	player->GetPlayerPos();
+	Point p = player->GetPlayerPos();
+	VECTOR playerPos = VGet(p.x, p.y, 0);
+	VECTOR enemyPos = VGet(pos_.x, pos_.y, 0);
+
+	Point testPos = pos_;//お試し距離
+	testPos.x += ENEMY_DRAW_SIZE;
+	distright = abs(p.x - testPos.x) + abs(p.y - testPos.y);//マンハッタン距離を求める
 	
+	testPos = pos_;//一回リセット
+	testPos.x -= ENEMY_DRAW_SIZE;
+	distleft = abs(p.x - testPos.x) + abs(p.y - testPos.y);//マンハッタン距離を求める
+
+	testPos = pos_;
+	testPos.y -= ENEMY_DRAW_SIZE;
+	distup = abs(p.x - testPos.x) + abs(p.y - testPos.y);//マンハッタン距離を求める
+
+	testPos = pos_;
+	testPos.y += ENEMY_DRAW_SIZE;
+	distdown = abs(p.x - testPos.x) + abs(p.y - testPos.y);//マンハッタン距離を求める
+
+	smalldist = distright;
+	bestdir = RIGHT;
 
 
+	if (distleft <smalldist)
+	{
+		smalldist = distleft;
+		bestdir = LEFT;
+	}
+	if (distup < smalldist)
+	{
+		smalldist = distup;
+		bestdir = UP;
+	}
+	if (distdown < smalldist)
+	{
+		smalldist = distdown;
+		bestdir = DOWN;
+	}
+	if (CanMove(bestdir))
+	{
+		dir_ = bestdir;
+	}
+	else
+	{
+		DIR right = TurnRight(dir_);
+
+		if (CanMove(right) && !CanMove(dir_))
+		{
+			dir_ = right;
+		}
+		else if (CanMove(right))
+		{
+
+		}
+		else if (CanMove(TurnLeft(dir_)))
+		{
+			dir_ = TurnLeft(dir_);
+		}
+		else
+		{
+			dir_ = TurnBack(dir_);
+		}
+	}
+
+	
+	/*DIR right = TurnRight(dir_);
+
+	if (CanMove(right) && !CanMove(dir_))
+	{
+		dir_ = right;
+	}
+	else if (CanMove(right))
+	{
+
+	}
+	else if (CanMove(TurnLeft(dir_)))
+	{
+		dir_ = TurnLeft(dir_);
+	}
+	else
+	{
+		dir_ = TurnBack(dir_);
+	}
+*/
 
 
 }

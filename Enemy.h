@@ -22,6 +22,12 @@ private:
 	DIR TurnBack(DIR d);
 	bool CanMove(DIR dir);
 
+	int distright;
+	int distleft;
+	int distup;
+	int distdown;
 
+	int smalldist;
+	DIR bestdir;
 };
 
