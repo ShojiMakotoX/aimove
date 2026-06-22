@@ -67,7 +67,7 @@ void Enemy::Update()
 			break;
 		}
 		pos_ = newPos;
-		prog_timer = 0.25f + prog_timer;
+		prog_timer = 0.3f + prog_timer;
 	}
 
 }
