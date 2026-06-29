@@ -11,6 +11,8 @@ namespace
 	const int ENEMY_DRAW_SIZE = 32; //敵の描画サイズ
 	const int animFrame[4]{ 0, 1, 2, 1 };
 	const float ANIM_INTERVAL = 0.2f;
+	const int CHASE_RANGE = 100;
+	const int RADIUS = 100;
 }
 
 
@@ -43,7 +45,7 @@ void Enemy::Update()
 
 	if (prog_timer < 0.0f)
 	{
-
+		Patrol();
 		Chase();
 		
 		//ここで1マス移動する
@@ -67,7 +69,7 @@ void Enemy::Update()
 			break;
 		}
 		pos_ = newPos;
-		prog_timer = 0.3f + prog_timer;
+		prog_timer = 0.25f + prog_timer;
 	}
 
 }
@@ -96,7 +98,72 @@ void Enemy::Draw()
 
 	int centerX = pos_.x + ENEMY_DRAW_SIZE / 2;
 	int centerY = pos_.y + ENEMY_DRAW_SIZE / 2;
-	DrawCircle(centerX, centerY, 200, GetColor(255, 255, 0), FALSE);
+	int radius = RADIUS;
+	float startAngle = -DX_PI / 4;
+	float endAngle = DX_PI / 4;//DX_PIが180である
+
+	for (int y = 0;y < STAGE_HEIGHT;y++)
+	{
+		for (int x = 0;x < STAGE_WIDTH;x++)
+		{
+			int tileCenterX = x * 32 + 16;
+			int tileCenterY = y * 32 + 16;
+
+			int dx = tileCenterX - centerX;
+			int dy = tileCenterY - centerY;
+
+			float distance = sqrtf(dx * dx + dy * dy);
+
+			float angle = atan2f(dy, dx);//マスまでの角度を求める
+			if (angle < 0)
+			{
+				angle += DX_TWO_PI;//2πを足す
+			}
+			float brightness = 255.0f * (1.0f - distance / RADIUS);
+			if (brightness < 0)
+			{
+				brightness = 0;
+			}
+			int color = GetColor((int)brightness, (int)brightness, 0);
+
+			if (distance <= RADIUS && angle >= startAngle && angle <= endAngle)
+			{
+				DrawBox(x * 32, y * 32, x * 32 + 32, y * 32 + 32, color, TRUE);
+			}
+			
+		}
+
+	}
+
+	//dir_に応じて角度を変更する。
+	switch (dir_)
+	{
+	case RIGHT://見えている範囲　-45度から+45度
+		 startAngle = -DX_PI / 4;
+		 endAngle = DX_PI / 4;
+		break;
+	case DOWN://見えている範囲　45度から135度
+		startAngle = DX_PI / 4;
+		endAngle = 3*DX_PI / 4;
+		break;
+	case LEFT://見えている範囲　135度から225度
+		startAngle = 3*DX_PI / 4;
+		endAngle = 5*DX_PI / 4;
+		break;
+	case UP://見えている範囲　225度から315度
+		startAngle = 5*DX_PI / 4;
+		endAngle = 7*DX_PI / 4;
+		break;
+	}
+
+	//扇形の描画
+	//for (float angle = startAngle;angle <= endAngle;angle += DX_PI / 90)//90度以下ならば
+	//{
+	//	int x = centerX + cosf(angle) * radius;
+	//	int y = centerY + sinf(angle) * radius;
+
+	//	DrawLine(centerX, centerY, x, y, GetColor(255, 255, 0));
+	//}
 }
 
 void Enemy::Chase()
@@ -109,7 +176,7 @@ void Enemy::Chase()
 	Point testPos = pos_;//お試し距離
 	testPos.x += ENEMY_DRAW_SIZE;
 	distright = abs(p.x - testPos.x) + abs(p.y - testPos.y);//マンハッタン距離を求める
-	
+
 	testPos = pos_;//一回リセット
 	testPos.x -= ENEMY_DRAW_SIZE;
 	distleft = abs(p.x - testPos.x) + abs(p.y - testPos.y);//マンハッタン距離を求める
@@ -122,51 +189,33 @@ void Enemy::Chase()
 	testPos.y += ENEMY_DRAW_SIZE;
 	distdown = abs(p.x - testPos.x) + abs(p.y - testPos.y);//マンハッタン距離を求める
 
+	int dist = abs(p.x - testPos.x) + abs(p.y - testPos.y);
+
 	smalldist = distright;
 	bestdir = RIGHT;
 
-
-	if (distleft <smalldist)
+	if (dist <= CHASE_RANGE)
 	{
-		smalldist = distleft;
-		bestdir = LEFT;
-	}
-	if (distup < smalldist)
-	{
-		smalldist = distup;
-		bestdir = UP;
-	}
-	if (distdown < smalldist)
-	{
-		smalldist = distdown;
-		bestdir = DOWN;
-	}
-	if (CanMove(bestdir))
-	{
-		dir_ = bestdir;
-	}
-	else
-	{
-		DIR right = TurnRight(dir_);
-
-		if (CanMove(right) && !CanMove(dir_))
+		if (distleft < smalldist)
 		{
-			dir_ = right;
+			smalldist = distleft;
+			bestdir = LEFT;
 		}
-		else if (CanMove(right))
+		if (distup < smalldist)
 		{
-
+			smalldist = distup;
+			bestdir = UP;
 		}
-		else if (CanMove(TurnLeft(dir_)))
+		if (distdown < smalldist)
 		{
-			dir_ = TurnLeft(dir_);
+			smalldist = distdown;
+			bestdir = DOWN;
 		}
-		else
+		if (CanMove(bestdir))
 		{
-			dir_ = TurnBack(dir_);
+			dir_ = bestdir;
 		}
 	}
-
 	
 	/*DIR right = TurnRight(dir_);
 
@@ -189,6 +238,36 @@ void Enemy::Chase()
 */
 
 
+}
+
+void Enemy::Patrol()
+{
+	DIR right = TurnRight(dir_);
+
+	if (CanMove(right) && !CanMove(dir_))
+	{
+		dir_ = right;
+	}
+	else if (CanMove(right))
+	{
+
+	}
+	else if (CanMove(TurnLeft(dir_)))
+	{
+		dir_ = TurnLeft(dir_);
+	}
+	else
+	{
+		dir_ = TurnBack(dir_);
+	}
+}
+
+void Enemy::Attack()
+{
+}
+
+void Enemy::Search()
+{
 }
 
 DIR Enemy::TurnRight(DIR d)

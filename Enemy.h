@@ -16,6 +16,9 @@ public:
 	void Update() override;
 	void Draw() override;
 	void Chase();//プレイヤーを追跡する
+	void Patrol();//プレイヤーパトロール
+	void Attack();
+	void Search();
 private:
 	DIR TurnRight(DIR d);
 	DIR TurnLeft(DIR d);
