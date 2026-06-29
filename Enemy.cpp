@@ -128,7 +128,7 @@ void Enemy::Draw()
 
 			if (distance <= RADIUS && angle >= startAngle && angle <= endAngle)
 			{
-				DrawBox(x * 32, y * 32, x * 32 + 32, y * 32 + 32, color, TRUE);
+				//DrawBox(x * 32, y * 32, x * 32 + 32, y * 32 + 32, color, TRUE);
 			}
 			
 		}
