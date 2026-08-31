@@ -2,6 +2,7 @@
 #include "global.h"
 #include "Input.h"
 #include "Stage.h"
+#include "Enemy.h"
 
 namespace
 {
@@ -83,3 +84,4 @@ void Player::Draw()
 	}
 	animTimer = animTimer - Time::DeltaTime();
 }
+

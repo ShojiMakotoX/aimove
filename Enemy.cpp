@@ -45,8 +45,9 @@ void Enemy::Update()
 
 	if (prog_timer < 0.0f)
 	{
-		Patrol();
-		Chase();
+		Chase();//追跡
+		Attack();
+		Patrol();//巡回
 		
 		//ここで1マス移動する
 		Point newPos = pos_;
@@ -126,10 +127,10 @@ void Enemy::Draw()
 			}
 			int color = GetColor((int)brightness, (int)brightness, 0);
 
-			if (distance <= RADIUS && angle >= startAngle && angle <= endAngle)
+			/*if (distance <= RADIUS && angle >= startAngle && angle <= endAngle)
 			{
-				//DrawBox(x * 32, y * 32, x * 32 + 32, y * 32 + 32, color, TRUE);
-			}
+				DrawBox(x * 32, y * 32, x * 32 + 32, y * 32 + 32, color, TRUE);
+			}*/
 			
 		}
 
@@ -157,13 +158,21 @@ void Enemy::Draw()
 	}
 
 	//扇形の描画
-	//for (float angle = startAngle;angle <= endAngle;angle += DX_PI / 90)//90度以下ならば
-	//{
-	//	int x = centerX + cosf(angle) * radius;
-	//	int y = centerY + sinf(angle) * radius;
+	float prevX = centerX + cosf(startAngle) * radius;
+	float prevY = centerY + sinf(startAngle) * radius;
 
-	//	DrawLine(centerX, centerY, x, y, GetColor(255, 255, 0));
-	//}
+	for (float angle = startAngle;angle <= endAngle;angle += DX_PI / 90)//90度以下ならば
+	{
+		float x = centerX + cosf(angle) * radius;
+		float y = centerY + sinf(angle) * radius;
+
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+		DrawTriangle(centerX, centerY, (int)prevX,(int)prevY,(int)x, (int)y, GetColor(255, 255, 224),TRUE);
+
+		prevX = x;
+		prevY = y;
+	}
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
 
 void Enemy::Chase()
@@ -264,6 +273,14 @@ void Enemy::Patrol()
 
 void Enemy::Attack()
 {
+	Player* player = FindGameObject<Player>();
+
+	Point p = player->GetPlayerPos();
+
+	if (p.x == pos_.x && p.y == pos_.y)
+	{
+		player->DestroyMe();
+	}
 }
 
 void Enemy::Search()
