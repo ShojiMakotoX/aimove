@@ -3,6 +3,9 @@
 #include "Stage.h"
 #include "Player.h"
 
+
+
+
 namespace
 {
 	const int ENEMY_SIZE = 48; //敵のサイズ 32*32
@@ -13,10 +16,12 @@ namespace
 	const float ANIM_INTERVAL = 0.2f;
 	const int CHASE_RANGE = 100;
 	const int RADIUS = 100;
+	const float SEARCH_TIME = 3.0f;
+	const float SEARCH_INTERVAL = 0.75f;
+	const float PLAYER_LOST = 3.0f;
+	
+
 }
-
-
-
 
 Enemy::Enemy()
 	: GameObject() 
@@ -24,6 +29,13 @@ Enemy::Enemy()
 	hImage_ = LoadGraph("Assets/panda_R.png");
 	pos_ = ENEMY_START_POS; //32はブロックの位置pos_
 	dir_ = INIT_ENEMY_DIR;
+	searchCount_ = 0;
+	searchTimer_ = 0.0f;
+	lostTime_ = 0.0f;
+
+	
+
+	
 }
 
 Enemy::~Enemy()
@@ -32,6 +44,22 @@ Enemy::~Enemy()
 
 void Enemy::Update()
 {
+	switch (state_)
+	{
+	case PATROL:
+		Patrol();
+		break;
+	case CHASE:
+		Chase();
+		break;
+	case ATTACK:
+		Attack();
+		break;
+	case SEARCH:
+		Search();
+		break;
+	}
+	
 	//GetRand(数値)
 	//3秒に1回向きをランダムに変える
 	static float dir_timer = 3.0f;
@@ -47,31 +75,30 @@ void Enemy::Update()
 
 	if (prog_timer < 0.0f)
 	{
-		Chase();//追跡
-		Attack();
-		Patrol();//巡回
-		
-		//ここで1マス移動する
-		Point newPos = pos_;
-
-		switch (dir_)
+		if (CanMove(dir_))
 		{
-		case UP:
-			newPos.y -= ENEMY_DRAW_SIZE;
-			break;
-		case DOWN:
-			newPos.y += ENEMY_DRAW_SIZE;
-			break;
-		case LEFT:
-			newPos.x -= ENEMY_DRAW_SIZE;
-			break;
-		case RIGHT:
-			newPos.x += ENEMY_DRAW_SIZE;
-			break;
-		default:
-			break;
+			//ここで1マス移動する
+			Point newPos = pos_;
+
+			switch (dir_)
+			{
+			case UP:
+				newPos.y -= ENEMY_DRAW_SIZE;
+				break;
+			case DOWN:
+				newPos.y += ENEMY_DRAW_SIZE;
+				break;
+			case LEFT:
+				newPos.x -= ENEMY_DRAW_SIZE;
+				break;
+			case RIGHT:
+				newPos.x += ENEMY_DRAW_SIZE;
+				break;
+			default:
+				break;
+			}
+			pos_ = newPos;
 		}
-		pos_ = newPos;
 		prog_timer = 0.25f + prog_timer;
 	}
 
@@ -207,6 +234,7 @@ void Enemy::Chase()
 
 	if (dist <= CHASE_RANGE)
 	{
+		lostTime_ = 0.0f;
 		if (distleft < smalldist)
 		{
 			smalldist = distleft;
@@ -226,6 +254,19 @@ void Enemy::Chase()
 		{
 			dir_ = bestdir;
 		}
+		if (p.x == pos_.x && p.y == pos_.y)
+		{
+			state_ = ATTACK;
+		}
+	}
+	else
+	{
+		lostTime_ += Time::DeltaTime();
+		if (lostTime_ >= PLAYER_LOST)
+		{
+			state_ = SEARCH;
+		}
+		
 	}
 	
 	/*DIR right = TurnRight(dir_);
@@ -253,6 +294,17 @@ void Enemy::Chase()
 
 void Enemy::Patrol()
 {
+	Player* player = FindGameObject<Player>();
+	Point p = player->GetPlayerPos();
+
+	int dist = abs(p.x - pos_.x) + abs(p.y - pos_.y);
+
+	if (dist <= CHASE_RANGE)
+	{
+		state_ = CHASE;
+		return;
+	}
+
 	DIR right = TurnRight(dir_);
 
 	if (CanMove(right) && !CanMove(dir_))
@@ -261,7 +313,7 @@ void Enemy::Patrol()
 	}
 	else if (CanMove(right))
 	{
-
+		
 	}
 	else if (CanMove(TurnLeft(dir_)))
 	{
@@ -287,6 +339,38 @@ void Enemy::Attack()
 
 void Enemy::Search()
 {
+	//Player* player = FindGameObject<Player>();
+
+	searchTimer_ += Time::DeltaTime();
+
+	if (searchTimer_>=SEARCH_INTERVAL)
+	{
+		searchTimer_ = 0.0f;
+		if (searchCount_ == 0)
+		{
+			dir_ = TurnLeft(dir_);
+		}
+		else if (searchCount_ == 1)
+		{
+			dir_ = TurnRight(dir_);
+		}
+		else if (searchCount_ == 2)
+		{
+			dir_ = TurnBack(dir_);
+		}
+		else
+		{
+			searchCount_ = 0;
+			searchTimer_ = 0.0f;
+
+			state_ = PATROL;
+
+			return;
+		}
+		searchCount_++;
+	}
+
+
 }
 
 DIR Enemy::TurnRight(DIR d)

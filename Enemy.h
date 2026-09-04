@@ -2,6 +2,13 @@
 #include ".\Library\GameObject.h"
 #include "global.h"
 
+enum EnemyState
+{
+	PATROL,
+	CHASE,
+	ATTACK,
+	SEARCH
+};
 
 class Enemy :
     public GameObject
@@ -31,5 +38,10 @@ private:
 
 	int smalldist;
 	DIR bestdir;
+
+	float searchTimer_;
+	int searchCount_;
+	float lostTime_;
+	EnemyState state_ = PATROL;
 };
 
