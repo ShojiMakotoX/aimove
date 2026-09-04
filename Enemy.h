@@ -3,7 +3,6 @@
 #include "global.h"
 
 
-
 class Enemy :
     public GameObject
 {
