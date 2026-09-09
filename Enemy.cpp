@@ -20,6 +20,7 @@ namespace
 	const float SEARCH_INTERVAL = 0.75f;
 	const float PLAYER_LOST = 3.0f;
 	
+	
 
 }
 
@@ -72,6 +73,8 @@ void Enemy::Update()
 		//dir_ = (DIR)(GetRand(3));
 		dir_timer = 3.0f + dir_timer;
 	}
+
+	
 
 	if (prog_timer < 0.0f)
 	{
@@ -348,11 +351,11 @@ void Enemy::Search()
 		searchTimer_ = 0.0f;
 		if (searchCount_ == 0)
 		{
-			dir_ = TurnLeft(dir_);
+			dir_ = TurnRight(dir_);
 		}
 		else if (searchCount_ == 1)
 		{
-			dir_ = TurnRight(dir_);
+			dir_ = TurnLeft(dir_);
 		}
 		else if (searchCount_ == 2)
 		{
