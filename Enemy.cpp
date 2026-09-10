@@ -337,6 +337,7 @@ void Enemy::Attack()
 	if (p.x == pos_.x && p.y == pos_.y)
 	{
 		player->DestroyMe();
+		SceneManager::ChangeScene("GAMEOVER");
 	}
 }
 

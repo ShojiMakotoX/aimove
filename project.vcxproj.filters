@@ -60,6 +60,9 @@
     <ClCompile Include="Stage.cpp">
       <Filter>PlayScene</Filter>
     </ClCompile>
+    <ClCompile Include="GameOverScene.cpp">
+      <Filter>GameOver</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Screen.h" />
@@ -132,6 +135,9 @@
     <ClInclude Include="Stage.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
+    <ClInclude Include="GameOverScene.h">
+      <Filter>GameOver</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Library">
@@ -148,6 +154,9 @@
     </Filter>
     <Filter Include="ImGui">
       <UniqueIdentifier>{a717257b-67b3-4bfa-834c-1e34032b33b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameOver">
+      <UniqueIdentifier>{467e6017-8f6a-4eaa-9698-3c2d62d3c97e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
