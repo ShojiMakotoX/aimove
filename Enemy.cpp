@@ -33,10 +33,7 @@ Enemy::Enemy()
 	searchCount_ = 0;
 	searchTimer_ = 0.0f;
 	lostTime_ = 0.0f;
-
-	
-
-	
+	isLost_ = false;
 }
 
 Enemy::~Enemy()
@@ -78,7 +75,7 @@ void Enemy::Update()
 
 	if (prog_timer < 0.0f)
 	{
-		if (CanMove(dir_))
+		if (!isLost_ && state_ != SEARCH && CanMove(dir_))
 		{
 			//ここで1マス移動する
 			Point newPos = pos_;
@@ -230,7 +227,7 @@ void Enemy::Chase()
 	testPos.y += ENEMY_DRAW_SIZE;
 	distdown = abs(p.x - testPos.x) + abs(p.y - testPos.y);//マンハッタン距離を求める
 
-	int dist = abs(p.x - testPos.x) + abs(p.y - testPos.y);
+	int dist = abs(p.x - pos_.x) + abs(p.y - pos_.y);
 
 	smalldist = distright;
 	bestdir = RIGHT;
@@ -238,6 +235,8 @@ void Enemy::Chase()
 	if (dist <= CHASE_RANGE)
 	{
 		lostTime_ = 0.0f;
+		isLost_ = false;
+
 		if (distleft < smalldist)
 		{
 			smalldist = distleft;
@@ -264,9 +263,16 @@ void Enemy::Chase()
 	}
 	else
 	{
+		isLost_ = true;
 		lostTime_ += Time::DeltaTime();
+
 		if (lostTime_ >= PLAYER_LOST)
 		{
+			searchStartDir_ = dir_;//Search開始時の向きを保存する
+			searchCount_ = 0;
+			searchTimer_ = 0.0f;
+			lostTime_ = 0.0f;
+			isLost_ = false;
 			state_ = SEARCH;
 		}
 		
@@ -350,25 +356,29 @@ void Enemy::Search()
 	if (searchTimer_>=SEARCH_INTERVAL)
 	{
 		searchTimer_ = 0.0f;
+
 		if (searchCount_ == 0)
 		{
-			dir_ = TurnRight(dir_);
+			//元の向きから右を見る
+			dir_ = TurnRight(searchStartDir_);
 		}
 		else if (searchCount_ == 1)
 		{
-			dir_ = TurnLeft(dir_);
+			//元の向きから左を見る
+			dir_ = TurnLeft(searchStartDir_);
 		}
 		else if (searchCount_ == 2)
 		{
-			dir_ = TurnBack(dir_);
+			//もう一度右を見る
+			dir_ = TurnRight(searchStartDir_);
 		}
 		else
 		{
+			dir_ = searchStartDir_;//元の向きの戻す
+
 			searchCount_ = 0;
 			searchTimer_ = 0.0f;
-
 			state_ = PATROL;
-
 			return;
 		}
 		searchCount_++;

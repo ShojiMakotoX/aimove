@@ -1,7 +1,7 @@
 #pragma once
-#include ".\Library\GameObject.h"
+#include "../Library/SceneBase.h"
 
-class GameOverScene : public GameObject
+class GameOverScene : public SceneBase
 {
 public:
 	GameOverScene();

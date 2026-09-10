@@ -60,8 +60,8 @@
     <ClCompile Include="Stage.cpp">
       <Filter>PlayScene</Filter>
     </ClCompile>
-    <ClCompile Include="GameOverScene.cpp">
-      <Filter>GameOver</Filter>
+    <ClCompile Include="Source\GameOverScene.cpp">
+      <Filter>PlayScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -135,8 +135,8 @@
     <ClInclude Include="Stage.h">
       <Filter>PlayScene</Filter>
     </ClInclude>
-    <ClInclude Include="GameOverScene.h">
-      <Filter>GameOver</Filter>
+    <ClInclude Include="Source\GameOverScene.h">
+      <Filter>PlayScene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

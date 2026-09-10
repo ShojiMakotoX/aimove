@@ -43,5 +43,8 @@ private:
 	int searchCount_;
 	float lostTime_;
 	EnemyState state_ = PATROL;
+	DIR searchStartDir_;//Œ³‚ÌŒü‚«‚ğ•Û‘¶‚µ‚Ä‚¨‚­
+
+	bool isLost_;//Chase‚Ì’†‚ÅˆÚ“®‹–‰Â‚ğŠÇ—‚·‚éƒtƒ‰ƒO
 };
 
